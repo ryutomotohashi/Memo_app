@@ -1,6 +1,6 @@
-// style
-import { ChangeEvent, useState } from "react";
-import styled from "styled-components";
+import { ChangeEvent, useCallback, useState } from "react";
+
+import { MemoList } from "./components/MemoList";
 
 export default function App() {
   // inputの中身のstate
@@ -12,6 +12,7 @@ export default function App() {
     setText(e.target.value);
   };
 
+  // ボタン押したら一覧に追加
   const onClickAdd = () => {
     // 配列を新規作成
     const newMemos = [...memos];
@@ -23,11 +24,15 @@ export default function App() {
     setText("");
   };
 
-  const onClickDelete = (index: number) => {
-    const newMemos = [...memos];
-    newMemos.splice(index, 1);
-    setMemos(newMemos);
-  };
+  // ボタンを押したらそのメモを削除
+  const onClickDelete = useCallback(
+    (index: number) => {
+      const newMemos = [...memos];
+      newMemos.splice(index, 1);
+      setMemos(newMemos);
+    },
+    [memos]
+  );
 
   return (
     <div className="App">
@@ -36,21 +41,7 @@ export default function App() {
         <input type="text" value={text} onChange={onChangeText} />
         <button onClick={onClickAdd}>追加</button>
       </div>
-      <SMemoList>
-        <h3>メモ一覧</h3>
-        <ul>
-          {memos.map((memo, index) => (
-            <>
-              <li key={memo}>{memo}</li>
-              <button onClick={() => onClickDelete(index)}>削除</button>
-            </>
-          ))}
-        </ul>
-      </SMemoList>
+      <MemoList memos={memos} onClickDelete={onClickDelete} />
     </div>
   );
 }
-
-const SMemoList = styled.div`
-  border: solid 1px black;
-`;
