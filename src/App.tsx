@@ -1,12 +1,12 @@
 import { ChangeEvent, useCallback, useState } from "react";
-
+import { useMemoList } from "./hooks/useMemoList";
 import { MemoList } from "./components/MemoList";
 
 export default function App() {
   // inputの中身のstate
   const [text, setText] = useState<string>("");
-  // メモ一覧のstate
-  const [memos, setMemos] = useState<string[]>([]);
+
+  const { memos, addTodo, deleteTodo } = useMemoList();
 
   const onChangeText = (e: ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
@@ -14,24 +14,16 @@ export default function App() {
 
   // ボタン押したら一覧に追加
   const onClickAdd = () => {
-    // 配列を新規作成
-    const newMemos = [...memos];
-    // 配列にtextを追加
-    newMemos.push(text);
-    // memosの中身を更新
-    setMemos(newMemos);
-    // inputの中身を空にする
+    addTodo(text);
     setText("");
   };
 
   // ボタンを押したらそのメモを削除
   const onClickDelete = useCallback(
     (index: number) => {
-      const newMemos = [...memos];
-      newMemos.splice(index, 1);
-      setMemos(newMemos);
+      deleteTodo(index);
     },
-    [memos]
+    [deleteTodo]
   );
 
   return (
